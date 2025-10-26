@@ -1,0 +1,16 @@
+# Vector configuration for systemd
+
+[Unit]
+Description=Vector
+Documentation=https://vector.dev
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/vector --config {{ vector_config_dir }}/vector.toml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

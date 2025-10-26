@@ -1,0 +1,14 @@
+# Vector configuration for sending logs to ClickHouse
+
+[sources.syslog]
+type = "file"
+paths = ["/var/log/syslog"]
+
+[sinks.clickhouse]
+type = "clickhouse"
+inputs = ["syslog"]
+database = "{{ vector_clickhouse_database }}"
+table = "{{ vector_clickhouse_table }}"
+host = "{{ vector_clickhouse_host }}"
+port = {{ vector_clickhouse_port }}
+auth = "default:"

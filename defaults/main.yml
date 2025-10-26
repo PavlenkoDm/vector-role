@@ -1,0 +1,12 @@
+#SPDX-License-Identifier: MIT
+---
+# defaults file for vector-role
+vector_version: "0.50.0"
+vector_config_dir: /etc/vector
+vector_user: vector
+
+# default vars for clickhouse_db
+vector_clickhouse_host: "127.0.0.1"
+vector_clickhouse_port: 9000
+vector_clickhouse_database: "logs"
+vector_clickhouse_table: "events"

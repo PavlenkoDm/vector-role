@@ -1,0 +1,48 @@
+# Ansible
+*.retry
+*.log
+.ansible/
+__pycache__/
+*.pyc
+*.pyo
+
+# Molecule
+.molecule/
+.cache/
+
+# Python
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.iml
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test outputs
+tests/test.retry
+tests/*.retry
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+.*.swp
+
+# Galaxy install info
+.galaxy_install_info

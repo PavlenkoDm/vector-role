@@ -1,0 +1,81 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for vector-role
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name:
+      - curl
+      - wget
+    state: present
+    update_cache: yes
+  tags: vector
+
+- name: Download vector binary
+  ansible.builtin.get_url:
+    url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-musl.tar.gz"
+    dest: "/tmp/vector-{{ vector_version }}.tar.gz"
+    mode: "0755"
+  timeout: 60
+  tags: vector
+
+- name: Extract vector archive
+  ansible.builtin.unarchive:
+    src: "/tmp/vector-{{ vector_version }}.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+  timeout: 60
+  tags: vector
+
+- name: Copy vector binary to /usr/local/bin
+  ansible.builtin.copy:
+    src: "/tmp/vector-x86_64-unknown-linux-musl/bin/vector"
+    dest: "/usr/local/bin/vector"
+    remote_src: yes
+    mode: "0755"
+  tags: vector
+
+- name: Clean up temporary files
+  ansible.builtin.file:
+    path: "/tmp/vector-{{ vector_version }}.tar.gz"
+    state: absent
+  tags: vector
+
+- name: Create vector config directory
+  ansible.builtin.file:
+    path: "{{ vector_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: vector
+
+- name: Create vector configuration
+  ansible.builtin.template:
+    src: vector.toml.j2
+    dest: "{{ vector_config_dir }}/vector.toml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart vector
+  tags: vector
+
+- name: Create vector systemd service
+  ansible.builtin.template:
+    src: vector.service.j2
+    dest: /etc/systemd/system/vector.service
+    mode: "0644"
+  notify: reload systemd
+  tags: vector
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  tags: vector
+
+- name: Start vector service
+  ansible.builtin.service:
+    name: vector
+    state: started
+    enabled: yes
+  register: vector_service_started
+  tags: vector

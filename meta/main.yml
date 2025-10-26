@@ -1,0 +1,26 @@
+#SPDX-License-Identifier: MIT
+galaxy_info:
+  role_name: vector
+  author: Dmitry Pavlenko
+  description: Ansible role for installing Vector log collector on Ubuntu 22.04
+  company: HIO
+
+  license: MIT
+
+  min_ansible_version: 2.12
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy # 22.04
+        - focal # 20.04
+
+  galaxy_tags:
+    - vector
+    - logs
+    - logging
+    - collector
+    - observability
+    - ubuntu
+
+dependencies: []
