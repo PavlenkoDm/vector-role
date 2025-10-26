@@ -196,8 +196,7 @@ MIT
 ## Автор
 
 Dmitry Pavlenko  
-GitHub: [@PavlenkoDm](https://github.com/PavlenkoDm)  
-Создано в рамках курса DevOps от Netology
+GitHub: [@PavlenkoDm](https://github.com/PavlenkoDm)
 
 ## Ссылки
 
