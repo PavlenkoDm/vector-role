@@ -1,14 +1,21 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for vector-role
-- name: Install prerequisites
+- name: Install prerequisites (Debian/Ubuntu)
   ansible.builtin.apt:
     name:
       - curl
       - wget
     state: present
     update_cache: yes
-  tags: vector
+  when: ansible_os_family == "Debian"
+
+- name: Install prerequisites (RedHat/OracleLinux)
+  ansible.builtin.package:
+    name:
+      - wget
+    state: present
+  when: ansible_os_family == "RedHat"
 
 - name: Download vector binary
   ansible.builtin.get_url:

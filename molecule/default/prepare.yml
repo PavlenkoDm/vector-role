@@ -1,0 +1,32 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure Python3 is installed on RedHat family (use raw to bypass Python requirement)
+      ansible.builtin.raw: |
+        if ! command -v python3 &> /dev/null; then
+          yum install -y python3
+        fi
+      when: ansible_os_family == "RedHat"
+      changed_when: false
+      become: true
+      become_method: su
+
+    - name: Ensure sudo is installed on RedHat family
+      ansible.builtin.raw: |
+        if ! command -v sudo &> /dev/null; then
+          yum install -y sudo
+        fi
+      when: ansible_os_family == "RedHat"
+      changed_when: false
+      become: true
+      become_method: su
+
+    - name: Ensure sudo and Python3 installed on Debian family
+      ansible.builtin.raw: |
+        apt-get update -y
+        apt-get install -y python3 sudo
+      when: ansible_os_family == "Debian"
+      changed_when: false
+      become: true

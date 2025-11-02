@@ -1,0 +1,104 @@
+---
+# Purpose: assert that the instance really ended up in the expected state.
+# Molecule calls this playbook with `molecule verify`.
+- name: Verify Vector installation on Ubuntu
+  hosts: all
+  become: true
+  gather_facts: false
+
+  vars:
+    vector_bin_path: /usr/local/bin/vector
+    vector_config_path: /etc/vector/vector.toml
+    vector_service_path: /etc/systemd/system/vector.service
+
+  tasks:
+    # --- Определяем ОС ---
+    - name: Gather OS release info
+      ansible.builtin.command: cat /etc/os-release
+      register: os_release
+      changed_when: false
+
+    - name: End play for non-Ubuntu systems early
+      ansible.builtin.meta: end_host
+      when: "'Ubuntu' not in os_release.stdout"
+
+    # --- Проверяем бинарник Vector ---
+    - name: Check that Vector binary exists
+      ansible.builtin.stat:
+        path: "{{ vector_bin_path }}"
+      register: vector_bin
+
+    - name: Assert Vector binary exists
+      ansible.builtin.assert:
+        that:
+          - vector_bin.stat.exists
+          - vector_bin.stat.mode is defined
+        fail_msg: "Vector binary not found at {{ vector_bin_path }}"
+        success_msg: "Vector binary exists at {{ vector_bin_path }}"
+
+    # --- Проверяем конфигурационный файл ---
+    - name: Check Vector config exists
+      ansible.builtin.stat:
+        path: "{{ vector_config_path }}"
+      register: vector_cfg
+
+    - name: Assert Vector config exists
+      ansible.builtin.assert:
+        that:
+          - vector_cfg.stat.exists
+        fail_msg: "Vector config not found at {{ vector_config_path }}"
+        success_msg: "Vector config file found"
+
+    # --- Проверяем валидность конфигурации ---
+    - name: Validate Vector configuration syntax
+      ansible.builtin.command: /usr/local/bin/vector validate --no-environment --config-dir /etc/vector
+      register: vector_validate
+      failed_when: vector_validate.rc != 0
+      changed_when: false
+
+    - name: Assert Vector configuration is valid
+      ansible.builtin.assert:
+        that: vector_validate.rc == 0
+        fail_msg: "Vector configuration is invalid"
+        success_msg: "Vector configuration is valid"
+
+    # --- Проверяем systemd unit-файл ---
+    - name: Check vector.service file exists
+      ansible.builtin.stat:
+        path: "{{ vector_service_path }}"
+      register: vector_service_file
+
+    - name: Assert vector.service file exists
+      ansible.builtin.assert:
+        that:
+          - vector_service_file.stat.exists
+        fail_msg: "Systemd service file not found at {{ vector_service_path }}"
+        success_msg: "Systemd service file found"
+
+    # # --- Проверяем, что служба активна ---
+    # - name: Check if vector service is active
+    #   ansible.builtin.command: systemctl is-active vector
+    #   register: service_status
+    #   changed_when: false
+    #   failed_when: false
+
+    # - name: Assert vector service is active
+    #   ansible.builtin.assert:
+    #     that:
+    #       - service_status.stdout.strip() == "active"
+    #     fail_msg: "Vector service is not active (status: {{ service_status.stdout.strip() }})"
+    #     success_msg: "Vector service is active and running"
+
+    # # --- Проверяем наличие процесса ---
+    # - name: Verify vector process is running (backup check)
+    #   ansible.builtin.shell: pgrep -x vector
+    #   register: vector_proc
+    #   changed_when: false
+    #   failed_when: false
+
+    # - name: Assert vector process is running
+    #   ansible.builtin.assert:
+    #     that:
+    #       - vector_proc.rc == 0
+    #     fail_msg: "Vector process not found in process list"
+    #     success_msg: "Vector process is running"
