@@ -1,0 +1,18 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: localhost
+
+provisioner:
+  name: ansible
+  inventory:
+    hosts:
+      all:
+        hosts:
+          localhost:
+            ansible_connection: local
+
+verifier:
+  name: ansible

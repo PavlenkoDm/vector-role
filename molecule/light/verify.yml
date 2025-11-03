@@ -1,0 +1,11 @@
+---
+- name: Verify dummy scenario
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if system is reachable
+      ansible.builtin.ping:
+
+    - name: Print verification success message
+      ansible.builtin.debug:
+        msg: "Verification succeeded!"

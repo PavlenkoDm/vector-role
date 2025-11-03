@@ -1,0 +1,8 @@
+---
+- name: Dummy converge playbook
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Say hello from Molecule + Tox
+      ansible.builtin.debug:
+        msg: "Molecule and Tox integration works fine!"
